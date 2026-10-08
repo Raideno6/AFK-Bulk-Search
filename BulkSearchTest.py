@@ -127,7 +127,7 @@ for i in range(len(cards)):
         isInStock = findInStock(cardId)
         if isInStock:
             cardsInStock.append(cards[i])
-    print_progress_bar(i, total_steps)
+    print_progress_bar(i, total_steps - 1)
 
 print()
 
