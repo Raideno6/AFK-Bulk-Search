@@ -1,83 +1,68 @@
-1 Academy Ruins
-1 Alchemist's Retrieval
-1 An Offer You Can't Refuse
-1 Ancient Tomb
+Commander
+1 Oloro, Ageless Ascetic
+Deck
+1 Absorb
+1 Ajani's Pridemate
+1 Angelic Accord
 1 Arcane Signet
-1 Back to Basics
-1 Brainstorm
-1 Cephalid Coliseum
-1 Chain of Vapor
-1 Chrome Mox
-1 Codex Shredder
-1 Copy Artifact
-1 Counterbalance
-1 Cursed Totem
-1 Cyclonic Rift
-1 Dig Through Time
-1 Dramatic Reversal
-1 Dress Down
-1 Echo of Eons
-1 Fabricate
-1 Fierce Guardianship
-1 Flooded Strand
-1 Flusterstorm
-1 Force of Negation
-1 Force of Will
-1 Frantic Search
-1 Gitaxian Probe
-1 Grim Monolith
-1 Gush
-1 Helm of Awakening
-1 Imposter Mech
-1 Inventors' Fair
-18 Island
-1 Isochron Scepter
-1 Karn, the Great Creator
-1 Lion's Eye Diamond
-1 Lotus Petal
-1 Mana Drain
-1 Mana Vault
-1 March of Swirling Mist
-1 Mental Misstep
-1 Merchant Scroll
-1 Miscast
-1 Misty Rainforest
-1 Moonsnare Prototype
-1 Mox Amber
-1 Mox Diamond
-1 Mox Opal
-1 Muddle the Mixture
-1 Mystic Forge
-1 Mystic Remora
-1 Mystic Sanctuary
-1 Mystical Tutor
-1 Narset, Parter of Veils
-1 Narset's Reversal
-1 Nexus of Fate
-1 Otawara, Soaring City
-1 Pact of Negation
-1 Polluted Delta
-1 Ponder
-1 Preordain
-1 Proteus Staff
-1 Resculpt
-1 Reshape
-1 Rhystic Study
-1 Scalding Tarn
-1 Sensei's Divining Top
-1 Snap
+1 Astarion, the Decadent
+1 Authority of the Consuls
+1 Boompile
+1 Boon Reflection
+1 Chromatic Lantern
+1 Cleric Class
+1 Cliffhaven Vampire
+1 Command Tower
+1 Counterspell
+1 Crested Sunmare
+1 Debt to the Deathless
+1 Divinity of Pride
+1 Doctor Strange, Surgeon
+1 Drogskol Reaver
+1 Elas il-Kor, Sadistic Pilgrim
+1 Elenda, Saint of Dusk
+1 Elixir of Immortality
+1 Essence Channeler
+1 Exemplar of Light
+1 Fisk Tower
+1 Fracture
+1 Ghostly Prison
+1 Hope Estheim
+1 Indulging Patrician
+12 Island
+1 Kabira Crossroads
+1 Lavinia, Azorius Renegade
+1 Leyline of Hope
+1 Lightning Greaves
+1 Marauding Blight-Priest
+1 Mortify
+1 Night's Whisper
+1 Nykthos Paragon
+1 Orzhov Signet
+13 Plains
+1 Propaganda
+1 Queza, Augur of Agonies
+1 Revenge of Ravens
+1 Rhox Faithmender
+1 Sanguine Bond
+1 Serra Avatar
 1 Sol Ring
-1 Solve the Equation
-1 Stern Scolding
-1 Swan Song
-1 Tezzeret the Seeker
-1 The One Ring
-1 The Tabernacle at Pendrell Vale
-1 Timetwister
-1 Transmute Artifact
-1 Urza's Saga
-1 Verity Circle
-1 Whir of Invention
-1 Windfall
-1 Winds of Rebuke
-1 Fblthp, the Lost
+1 Soul Warden
+1 Space-Time Anomaly
+1 Speaker of the Heavens
+1 Sunscorch Regent
+1 Suture Priest
+12 Swamp
+1 Swords to Plowshares
+1 Talisman of Dominance
+1 The Gaffer
+1 The Wind Crystal
+1 Thought Vessel
+1 Vindicate
+1 Vito, Thorn of the Dusk Rose
+1 Voice of the Blessed
+1 Void Rend
+1 Wall of Reverence
+1 Well-Worn Spatula
+1 Will, Scion of Peace
+1 Witch of the Moors
