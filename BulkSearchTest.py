@@ -121,7 +121,7 @@ cardsInStock = []
 total_steps = len(cards)
 for i in range(len(cards)):
 
-    cardId = FetchCardId("Brightglass Gearhulk")
+    cardId = FetchCardId(cards[i])
 
     if (cardId is not None):
         isInStock = findInStock(cardId)
@@ -132,10 +132,17 @@ for i in range(len(cards)):
 print()
 
 if len(cardsInStock) > 0:
-    print("Cards in stock:")
+    print("Cards in stock: ")
     for i in range(len(cardsInStock)):
         print(cardsInStock[i])
 
-    print("AFK has " + str(len(cardsInStock)) + " of the " + str(len(cards)) + " needed.")
+if len(cardsInStock) < len(cards):
+    print()
+    print("Cards not at AFK: ")
+    missingCards = list(set(cards) - set(cardsInStock))
+    for i in range(len(missingCards)):
+            print(missingCards[i])
+print()
+print("AFK has " + str(len(cardsInStock)) + " of the " + str(len(cards)) + " needed.")
 
 

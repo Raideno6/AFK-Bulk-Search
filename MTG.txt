@@ -1,61 +1,83 @@
-1 Aether Syphon
-1 Agonizing Remorse
-1 Altar of the Goyf
-1 Annul
+1 Academy Ruins
+1 Alchemist's Retrieval
+1 An Offer You Can't Refuse
+1 Ancient Tomb
 1 Arcane Signet
-1 Archfiend of Spite
-1 Archive Trap
-1 Artful Dodge
-1 Asphyxiate
-1 Assassin's Strike
-1 Atrocious Experiment
-1 Author of Shadows
-1 Bake into a Pie
-1 Balshan Beguiler
-1 Balustrade Spy
-1 Bamboozle
-1 Beacon of Unrest
-1 Bitter Triumph
-1 Bladegriff Prototype
-1 Blight Grenade
-1 Bone Shards
-1 Boompile
-1 Brawler's Plate
-1 Broken Ambitions
-1 Chancellor of the Spires
-1 Chariot of Victory
-1 Chronic Flooding
-1 Coerced Confession
-1 Compelling Argument
-1 Consuming Aberration
-1 Countermand
-1 Counterpoint
-1 Crosstown Courier
-1 Cruel Somnophage
-1 Demogorgon's Clutches
-1 Dreadhound
-1 Flash Counter
-1 Forebear's Blade
-1 Fraying Sanity
-1 Geth's Verdict
-1 Geth, Lord of the Vault
-1 Hero's Heirloom
-20 Island
-1 Manic Scribe
-1 Mind Sculpt
-1 Mindscour Dragon
-1 O-Naginata
-1 Overwhelmed Apprentice
-1 Patient Rebuilding
-1 Raiders' Wake
-1 Relic Golem
-1 Scholar of the Ages
-20 Swamp
-1 Syphon Mind
-1 Teferi's Tutelage
-1 Tenured Oilcaster
-1 The Eldest Reborn
-1 Tinybones Joins Up
-1 Tinybones, Pocket Nuisance
-1 Vicious Rumors
-1 Wight of Precinct Six
+1 Back to Basics
+1 Brainstorm
+1 Cephalid Coliseum
+1 Chain of Vapor
+1 Chrome Mox
+1 Codex Shredder
+1 Copy Artifact
+1 Counterbalance
+1 Cursed Totem
+1 Cyclonic Rift
+1 Dig Through Time
+1 Dramatic Reversal
+1 Dress Down
+1 Echo of Eons
+1 Fabricate
+1 Fierce Guardianship
+1 Flooded Strand
+1 Flusterstorm
+1 Force of Negation
+1 Force of Will
+1 Frantic Search
+1 Gitaxian Probe
+1 Grim Monolith
+1 Gush
+1 Helm of Awakening
+1 Imposter Mech
+1 Inventors' Fair
+18 Island
+1 Isochron Scepter
+1 Karn, the Great Creator
+1 Lion's Eye Diamond
+1 Lotus Petal
+1 Mana Drain
+1 Mana Vault
+1 March of Swirling Mist
+1 Mental Misstep
+1 Merchant Scroll
+1 Miscast
+1 Misty Rainforest
+1 Moonsnare Prototype
+1 Mox Amber
+1 Mox Diamond
+1 Mox Opal
+1 Muddle the Mixture
+1 Mystic Forge
+1 Mystic Remora
+1 Mystic Sanctuary
+1 Mystical Tutor
+1 Narset, Parter of Veils
+1 Narset's Reversal
+1 Nexus of Fate
+1 Otawara, Soaring City
+1 Pact of Negation
+1 Polluted Delta
+1 Ponder
+1 Preordain
+1 Proteus Staff
+1 Resculpt
+1 Reshape
+1 Rhystic Study
+1 Scalding Tarn
+1 Sensei's Divining Top
+1 Snap
+1 Sol Ring
+1 Solve the Equation
+1 Stern Scolding
+1 Swan Song
+1 Tezzeret the Seeker
+1 The One Ring
+1 The Tabernacle at Pendrell Vale
+1 Timetwister
+1 Transmute Artifact
+1 Urza's Saga
+1 Verity Circle
+1 Whir of Invention
+1 Windfall
+1 Winds of Rebuke
+1 Fblthp, the Lost
