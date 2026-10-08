@@ -5,11 +5,11 @@ import sys
 
 @dataclass
 class Card:
-    s: str    # Name/Set (e.g., "Modern Horizons 3 Commander")
-    q: str    # Quantity (e.g., "0")
-    l: str    # Level/Line (e.g., "1")
-    sid: str  # Unique ID (e.g., "2995201b-22c7...")
-    f: str    # Foil status or flag (e.g., "0")
+    s: str    # Name/Set 
+    q: str    # Quantity 
+    l: str    # Level/Line 
+    sid: str  # Unique ID 
+    f: str    # Foil status
 
     @classmethod
     def from_dict(cls, data: dict) -> 'Card':
@@ -43,8 +43,6 @@ def FetchCardId(cardName):
     jsonResponse = response.json()
     searchResults = json.loads(json.dumps(jsonResponse))
     resultList = searchResults["d"]
-    # clean_string = resultList.rsplit('},', 1)[0] + '}]'
-    # print(clean_string)
 
     bestList = json.loads(resultList)
     return bestList[0]["cid"]
