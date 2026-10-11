@@ -1,4 +1,5 @@
 import time
+import asyncio
 from contextlib import asynccontextmanager
 from pathlib import Path
 import requests
@@ -15,6 +16,8 @@ CARD_PRICES_PATH = (
     / "default-cards-20261009210547.jsonl.gz"
 )
 cardPrices: dict[str, str] = {}
+MAX_CONCURRENT_CARD_SEARCHES = 4
+AFK_REQUEST_TIMEOUT = (5, 20)
 
 
 @dataclass
@@ -86,15 +89,23 @@ def get_data():
 async def search(request: SearchRequest):
     start_time = time.perf_counter()
     cards = parse_card_list([request.text])
-    cardsInStock = []
-    for i in range(len(cards)):
-        cardPrinting = FetchAllPrintings(
-            cards[i],
-            printImages=request.printImages,
-            showCheapestOnly=request.ShowOnlyCheapest,
-        )
-        if (cardPrinting is not None and len(cardPrinting) > 0):
-            cardsInStock.append({cards[i]: cardPrinting})
+    semaphore = asyncio.Semaphore(MAX_CONCURRENT_CARD_SEARCHES)
+
+    async def fetch_card(card_name):
+        async with semaphore:
+            return await asyncio.to_thread(
+                FetchAllPrintings,
+                card_name,
+                printImages=request.printImages,
+                showCheapestOnly=request.ShowOnlyCheapest,
+            )
+
+    card_printings = await asyncio.gather(*(fetch_card(card) for card in cards))
+    cardsInStock = [
+        {card_name: printings}
+        for card_name, printings in zip(cards, card_printings)
+        if printings
+    ]
 
     end_time = time.perf_counter()
     print(f"\nSearch completed in {end_time - start_time:.2f} seconds.")
@@ -124,7 +135,9 @@ def FetchCardId(cardName):
         "search": cardName
     }
 
-    response = requests.post(url, headers=headers, json=payload)
+    response = requests.post(
+        url, headers=headers, json=payload, timeout=AFK_REQUEST_TIMEOUT
+    )
     jsonResponse = response.json()
     searchResults = json.loads(json.dumps(jsonResponse))
     resultList = searchResults["d"]
@@ -148,7 +161,9 @@ def findInStock(cid):
         "cid": cid
     }
 
-    response = requests.post(url, headers=headers, json=payload)
+    response = requests.post(
+        url, headers=headers, json=payload, timeout=AFK_REQUEST_TIMEOUT
+    )
     jsonResponse = response.json()
     searchResults = json.loads(json.dumps(jsonResponse))
     resultList = searchResults["d"]
@@ -216,7 +231,9 @@ def FetchAllPrintings(cardName, printImages=True, showCheapestOnly=False):
     }
 
 
-    response = requests.post(url, headers=headers, json=payload)
+    response = requests.post(
+        url, headers=headers, json=payload, timeout=AFK_REQUEST_TIMEOUT
+    )
     jsonResponse = response.json()
     searchResults = json.loads(json.dumps(jsonResponse))
     resultList = searchResults["d"]
@@ -241,7 +258,9 @@ def FetchAllPrintings(cardName, printImages=True, showCheapestOnly=False):
     payload = {
         "cid": cid
     }
-    response = requests.post(url, headers=headers, json=payload)
+    response = requests.post(
+        url, headers=headers, json=payload, timeout=AFK_REQUEST_TIMEOUT
+    )
     jsonResponse = response.json()
     searchResults = json.loads(json.dumps(jsonResponse))
     resultList = searchResults["d"]
