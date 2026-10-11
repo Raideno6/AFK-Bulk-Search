@@ -24,7 +24,7 @@ class Card:
     l: str    # Level/Line
     sid: str  # Unique ID
     f: str    # Foil status
-    price: str = "0.0" # Price
+    price: str | None = None # Price
     image_url: str = "" # Image URL
 
     @classmethod
@@ -73,6 +73,8 @@ app.add_middleware(
 
 class SearchRequest(BaseModel):
     text: str
+    printImages: bool = True
+    ShowOnlyCheapest: bool = False
 
 
 @app.get("/api/data")
@@ -82,14 +84,20 @@ def get_data():
 
 @app.post("/search")
 async def search(request: SearchRequest):
+    start_time = time.perf_counter()
     cards = parse_card_list([request.text])
     cardsInStock = []
-    total_steps = len(cards)
     for i in range(len(cards)):
-        cardPrinting = FetchAllPrintings(cards[i])
+        cardPrinting = FetchAllPrintings(
+            cards[i],
+            printImages=request.printImages,
+            showCheapestOnly=request.ShowOnlyCheapest,
+        )
         if (cardPrinting is not None and len(cardPrinting) > 0):
             cardsInStock.append({cards[i]: cardPrinting})
-        print_progress_bar(i, total_steps - 1)
+
+    end_time = time.perf_counter()
+    print(f"\nSearch completed in {end_time - start_time:.2f} seconds.")
 
     return {"status": "received", "data": cardsInStock}
 
@@ -187,9 +195,10 @@ def parse_card_list(raw_input_list):
         else:
             card_list.append(cleaned_line)
 
+    card_list = list(dict.fromkeys(card_list))
     return card_list
 
-def FetchAllPrintings(cardName):
+def FetchAllPrintings(cardName, printImages=True, showCheapestOnly=False):
     url = "https://mtg.afk.games/AFKMTG.asmx/cardNameSearch"
 
     headers = {
@@ -213,6 +222,8 @@ def FetchAllPrintings(cardName):
     resultList = searchResults["d"]
 
     bestList = json.loads(resultList)
+    if bestList == []:
+        return []
     cid = bestList[0]["cid"]
 
     url = "https://mtg.afk.games/AFKMTG.asmx/cardsbycid"
@@ -237,30 +248,40 @@ def FetchAllPrintings(cardName):
     cardList = json.loads(resultList)
     printingsInStock = []
 
-    for i in range(len(cardList)):
-        if int(cardList[i]["q"]) > 0:
-            printing = Card(**cardList[i])
-            if (printing.f == "1" and cardPrices.get(printing.sid) is not None):
-                printing.price = cardPrices[printing.sid]["usd_foil"]
-            elif (printing.f == "0" and cardPrices.get(printing.sid) is not None):
-                printing.price = cardPrices[printing.sid]["usd"]
+    cheapestPrinting = None
+    if showCheapestOnly:
+        for i in range(len(cardList)):
+            if int(cardList[i]["q"]) > 0:
+                printing = Card(**cardList[i])
+                if (printing.f == "1" and cardPrices.get(printing.sid) is not None):
+                    printing.price = cardPrices[printing.sid]["usd_foil"]
+                elif (printing.f == "0" and cardPrices.get(printing.sid) is not None):
+                    printing.price = cardPrices[printing.sid]["usd"]
+                if cheapestPrinting is None or (
+                    printing.price is not None
+                    and (
+                        cheapestPrinting.price is None
+                        or float(printing.price) < float(cheapestPrinting.price)
+                    )
+                ):
+                    cheapestPrinting = printing
+        if printImages and cheapestPrinting is not None:
             time.sleep(0.5)
-            printing.image_url = GetScryfallImage(printing.sid)
-            printingsInStock.append(printing)
+            cheapestPrinting.image_url = GetScryfallImage(cheapestPrinting.sid)
+    else:
+        for i in range(len(cardList)):
+            if int(cardList[i]["q"]) > 0:
+                printing = Card(**cardList[i])
+                if (printing.f == "1" and cardPrices.get(printing.sid) is not None):
+                    printing.price = cardPrices[printing.sid]["usd_foil"]
+                elif (printing.f == "0" and cardPrices.get(printing.sid) is not None):
+                    printing.price = cardPrices[printing.sid]["usd"]
+                if printImages:
+                    time.sleep(0.5)
+                    printing.image_url = GetScryfallImage(printing.sid)
+                printingsInStock.append(printing)
 
-    # if len(printingsInStock) > 0:
-    #     # print(str(len(printingsInStock)) + " printings in stock")
-    #     for i in range(len(printingsInStock)):
-    #         isFoil = False
-    #         if printingsInStock[i].f is "1":
-    #             isFoil = True
-    #         # print(printingsInStock[i].s + ": " + printingsInStock[i].q + " in stock! | Foil: " + str(isFoil))
-    #         printingsInStock.append(printingsInStock[i])
-    # else:
-    #     # print("Out of stock!")
-    #     return []
-
-    cards = []
+    cards = [cheapestPrinting] if cheapestPrinting else []
     for i in range(len(printingsInStock)):
         cards.append(printingsInStock[i])
     return cards

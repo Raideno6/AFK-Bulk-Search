@@ -9,5 +9,6 @@ export default defineConfig({
       '/search': 'http://127.0.0.1:8000',
       '/api/data': 'http://127.0.0.1:8000',
     },
+    allowedHosts: true,
   },
 })

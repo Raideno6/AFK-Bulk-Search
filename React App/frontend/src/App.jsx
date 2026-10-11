@@ -1,7 +1,12 @@
 import { useEffect, useState } from 'react';
+import { pink } from '@mui/material/colors';
 import axios from 'axios';
 import ThommyIcon from './assets/ThommyIcon.png';
+import BagelBoy from './assets/Jumping For Joy.gif';
 import { motion } from "motion/react";
+import Checkbox from '@mui/material/Checkbox';
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
 
 function CardCarousel({ cardName, printings }) {
   const [index, setIndex] = useState(0);
@@ -17,21 +22,20 @@ function CardCarousel({ cardName, printings }) {
     <article className="card-carousel">
       <h2>{cardName}</h2>
 
-      {printing.image_url ? (
+      {printing.image_url && (
         <img src={printing.image_url} alt={`${cardName} — ${printing.s}`} />
-      ) : (
-        <p>Image unavailable</p>
       )}
-
-      <div className="carousel-controls">
-        <button type="button" onClick={() => changeSlide(-1)} aria-label="<-">
-          ‹
-        </button>
-        <span>{index + 1} / {printings.length}</span>
-        <button type="button" onClick={() => changeSlide(1)} aria-label="->">
-          ›
-        </button>
-      </div>
+        {printings.length > 1 && (
+          <div className="carousel-controls">
+            <button type="button" onClick={() => changeSlide(-1)} aria-label="<-">
+              ‹
+            </button>
+            <span>{index + 1} / {printings.length}</span>
+            <button type="button" onClick={() => changeSlide(1)} aria-label="->">
+              ›
+            </button>
+          </div>
+      )}
 
       <p>{printing.s}</p>
       <p>{String(printing.f) === '1' ? 'Foil' : 'Nonfoil'}</p>
@@ -52,6 +56,18 @@ export default function HomePage() {
   const [pricesStatus, setPricesStatus] = useState('Loading card prices...');
   const [pricesLoadError, setPricesLoadError] = useState(false);
   const [foundCards, setFoundCards] = useState([]);
+  const [printImages, setPrintImages] = useState(true);
+  const [showCheapestOnly, setShowCheapestOnly] = useState(false);
+  const [resultsShowCheapestOnly, setResultsShowCheapestOnly] = useState(false);
+
+  const handleChange = (event) => {
+    const { checked, name } = event.target;
+    if (name === 'printImages') {
+      setPrintImages(checked);
+    } else if (name === 'showCheapestOnly') {
+      setShowCheapestOnly(checked);
+    }
+  };
 
   useEffect(() => {
     let isMounted = true;
@@ -82,10 +98,15 @@ export default function HomePage() {
     setHasError(false);
 
     try {
-      const response = await axios.post('/search', { text });
+      const response = await axios.post('/search', {
+        text,
+        printImages,
+        ShowOnlyCheapest: showCheapestOnly,
+      });
 
       console.log(response.data);
       setFoundCards(response.data.data ?? []);
+      setResultsShowCheapestOnly(showCheapestOnly);
     } catch (error) {
       console.error('Search request failed:', error);
       setMessage('Could not send text to the backend.');
@@ -95,6 +116,23 @@ export default function HomePage() {
     }
   };
 
+  const isBagelBoySearch = text.toLowerCase().includes('bagel boy');
+  const resultPrintings = foundCards.flatMap((cardEntry) =>
+    Object.values(cardEntry).flat()
+  );
+  const resultPrices = resultPrintings.map((printing) => Number(printing.price));
+  const hasUnavailablePrice = resultPrintings.some(
+    (printing, index) =>
+      printing.price == null ||
+      printing.price === '' ||
+      !Number.isFinite(resultPrices[index])
+  );
+  const totalPrice = resultPrices.reduce((total, price) => total + price, 0);
+  const formattedTotalPrice = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+  }).format(totalPrice);
+
   return (
     <div>
       <nav className="navbar">
@@ -102,6 +140,14 @@ export default function HomePage() {
       </nav>
         {foundCards.length > 0 ? (
           <main className="found-cards">
+            <div className="results-summary">
+              <p>Found {foundCards.length} card{foundCards.length !== 1 ? 's' : ''}.</p>
+              {resultsShowCheapestOnly && (
+                <p>
+                  Total price: {hasUnavailablePrice ? 'Unavailable' : formattedTotalPrice}
+                </p>
+              )}
+            </div>
             <button type="button" onClick={() => setFoundCards([])}>
               New search
             </button>
@@ -140,9 +186,13 @@ export default function HomePage() {
                       disabled={isSearching}
                     />
                     {isSearching && (
-                      <div className="bouncing-loader" role="status" aria-label="Thommy is searching">
+                      <div
+                        className="bouncing-loader"
+                        role="status"
+                        aria-label={isBagelBoySearch ? 'Bagel Boy is searching' : 'Thommy is searching'}
+                      >
                         <motion.img
-                          src={ThommyIcon}
+                          src={isBagelBoySearch ? BagelBoy : ThommyIcon}
                           alt=""
                           className="bouncing-thommy"
                           animate={{
@@ -171,16 +221,46 @@ export default function HomePage() {
                             ease: 'easeInOut',
                           }}
                         />
-                        <span className="bouncing-loader-label">Thommy is searching...</span>
+                        <span className="bouncing-loader-label">
+                          {isBagelBoySearch ? 'Bagel Boy is searching...' : 'Thommy is searching...'}
+                        </span>
                       </div>
                     )}
                   </div>
                   <button className="search-button" type="submit" disabled={isSearching || !pricesReady}>
                     {isSearching ? 'SEARCHING...' : 'SEARCH'}
                   </button>
-                  <p className={`search-message${pricesLoadError ? ' error' : ''}`} role="status">
-                    {pricesStatus}
-                  </p>
+
+                  <FormGroup>
+                      <FormControlLabel control={
+                          <Checkbox
+                          name="printImages"
+                          checked={printImages}
+                          onChange={handleChange}
+                          sx={{
+                            color: pink[800],
+                            '&.Mui-checked': {
+                              color: pink[600],
+                            },
+                          }}
+                          />
+                          }
+                      label="Print Images"/>
+                      <FormControlLabel control={
+                          <Checkbox
+                            name="showCheapestOnly"
+                            checked={showCheapestOnly}
+                            onChange={handleChange}
+                            sx={{
+                            color: pink[800],
+                            '&.Mui-checked': {
+                              color: pink[600],
+                            },
+                          }}/>
+                        } label="Show Cheapest Only"
+                       />
+                  </FormGroup>
+
                   {message && (
                     <p className={`search-message${hasError ? ' error' : ''}`} role="status">
                       {message}
