@@ -1,0 +1,150 @@
+/* ==========================================================================
+   1. Design System & Variables
+   ========================================================================== */
+:root {
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+
+  /* Color Palette */
+  --bg-main: #f1f5f9;
+  --bg-card: #ffffff;
+  --bg-item: #f8fafc;
+
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --text-body: #1e293b;
+  --text-dark: #334155;
+
+  --border-light: #e2e8f0;
+  --color-primary: #3b82f6;
+  --color-success: #22c55e;
+  --color-error: #ef4444;
+
+  /* Layout Constants */
+  --radius-lg: 12px;
+  --radius-md: 8px;
+  --radius-sm: 6px;
+  --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+/* ==========================================================================
+   2. Global Typography & Structural Resets
+   ========================================================================== */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  color: var(--text-body);
+  background-color: var(--bg-main);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ==========================================================================
+   3. Base Layout Elements
+   ========================================================================== */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 2rem;
+  background-color: var(--bg-card);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.hero {
+  max-width: 800px;
+  margin: 4rem auto;
+  padding: 0 1.5rem;
+  text-align: center;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  color: var(--text-main);
+  letter-spacing: -0.025em;
+}
+
+.subtitle {
+  font-size: 1.125rem;
+  color: var(--text-muted);
+  margin-bottom: 2.5rem;
+  line-height: 1.6;
+}
+
+/* ==========================================================================
+   4. Search Input
+   ========================================================================== */
+.search-card {
+  background-color: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  box-shadow: var(--shadow);
+  text-align: left;
+}
+
+.search-label {
+  display: block;
+  margin-bottom: 0.75rem;
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+.search-textarea {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  height: 18rem;
+  padding: 1rem;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  color: var(--text-body);
+  background-color: var(--bg-item);
+  font: inherit;
+  line-height: 1.5;
+  overflow-y: auto;
+  resize: vertical;
+}
+
+.search-textarea:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.search-button {
+  margin-top: 1rem;
+  padding: 0.75rem 1.5rem;
+  border: 0;
+  border-radius: var(--radius-md);
+  color: #ffffff;
+  background-color: var(--color-primary);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.search-button:hover:not(:disabled) {
+  background-color: #2563eb;
+}
+
+.search-button:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.search-message {
+  margin-top: 1rem;
+  color: var(--color-success);
+  font-size: 0.95rem;
+}
+
+.search-message.error {
+  color: var(--color-error);
+}

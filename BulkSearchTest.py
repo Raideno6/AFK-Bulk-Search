@@ -2,6 +2,7 @@ import requests
 import json
 from dataclasses import dataclass
 import sys
+import gzip
 
 @dataclass
 class Card:
@@ -21,6 +22,107 @@ class Card:
             f=data.get('f', '')
         )
 
+
+def FetchCardValue(sid):
+    file_path = "LocalData/default-cards-20261009210547.jsonl.gz"
+
+    with gzip.open(file_path, "rt", encoding="utf-8") as file:
+        for line in file:
+            if not line.strip():
+                continue
+
+            card_data = json.loads(line)
+
+            if card_data.get("id") == sid:
+                return card_data["prices"]["usd"]
+
+    return None
+    # try:
+    #    print(card_prices["data"][sid])
+    # except KeyError:
+    #    print("Printing not found")
+
+    # url = f"https://api.scryfall.com/cards/{sid}"
+    #
+    # headers = {
+    #     "accept": "application/json, text/javascript, */*; q=0.01",
+    #     "accept-language": "en-US,en;q=0.9",
+    #     "content-type": "application/json; charset=UTF-8",
+    #     "User-Agent": "BulkCardSearch/1.0 (your@email.com)",
+    # }
+    #
+    # response = requests.get(url, headers=headers)
+    #
+    # if response.status_code == 200:
+    #     card_data = response.json()
+    #
+    #     # Extract card name and price dictionary
+    #     card_name = card_data.get("name")
+    #     prices = card_data.get("prices", {})
+    #
+    #     print(f"Card: {card_name}")
+    #     print(f"USD (Normal): ${prices.get('usd')}")
+    #     print(f"USD (Foil):   ${prices.get('usd_foil')}")
+    #     print(f"EUR (Normal): €{prices.get('eur')}")
+    #     print(f"TIX (MTGO):   {prices.get('tix')} tix")
+    #
+    #     return prices
+    # elif response.status_code == 404:
+    #     print(f"Error: Card with ID {sid} not found.")
+    # else:
+    #     print(f"Error: HTTP {response.status_code}")
+
+def FetchCardByName(cardName):
+    url = "https://mtg.afk.games/AFKMTG.asmx/cardNameSearch"
+
+    headers = {
+        "accept": "application/json, text/javascript, */*; q=0.01",
+        "accept-language": "en-US,en;q=0.9",
+        "content-type": "application/json; charset=UTF-8",
+        "priority": "u=1, i",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36",
+        "x-requested-with": "XMLHttpRequest",
+        "referer": "https://mtg.afk.games/"
+    }
+
+    payload = {
+        "search": cardName
+    }
+
+    response = requests.post(url, headers=headers, json=payload)
+    jsonResponse = response.json()
+    searchResults = json.loads(json.dumps(jsonResponse))
+    resultList = searchResults["d"]
+
+    bestList = json.loads(resultList)
+    cid = bestList[0]["cid"]
+
+    url = "https://mtg.afk.games/AFKMTG.asmx/cardsbycid"
+
+    headers = {
+        "accept": "application/json, text/javascript, */*; q=0.01",
+        "accept-language": "en-US,en;q=0.9",
+        "content-type": "application/json; charset=UTF-8",
+        "priority": "u=1, i",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36",
+        "x-requested-with": "XMLHttpRequest",
+        "referer": "https://mtg.afk.games/"
+    }
+
+    payload = {
+        "cid": cid
+    }
+
+    response = requests.post(url, headers=headers, json=payload)
+    jsonResponse = response.json()
+    searchResults = json.loads(json.dumps(jsonResponse))
+    resultList = searchResults["d"]
+    cardList = json.loads(resultList)
+    cards = []
+    for i in range(len(cardList)):
+        card = Card(**cardList[i])
+        cards.append(card)
+    return cards
 
 def FetchCardId(cardName):
     url = "https://mtg.afk.games/AFKMTG.asmx/cardNameSearch"
@@ -130,19 +232,27 @@ for i in range(len(cards)):
     print_progress_bar(i, total_steps - 1)
 
 print()
+#
+# if len(cardsInStock) > 0:
+#     print("Cards in stock: ")
+#     for i in range(len(cardsInStock)):
+#         print(cardsInStock[i])
+#
+# if len(cardsInStock) < len(cards):
+#     print()
+#     print("Cards not at AFK: ")
+#     missingCards = list(set(cards) - set(cardsInStock))
+#     for i in range(len(missingCards)):
+#             print(missingCards[i])
+# print()
+# print("AFK has " + str(len(cardsInStock)) + " of the " + str(len(cards)) + " needed.")
 
-if len(cardsInStock) > 0:
-    print("Cards in stock: ")
-    for i in range(len(cardsInStock)):
-        print(cardsInStock[i])
+# cardToPriceSearch = FetchCardByName("Sol Ring")
+# print(cardToPriceSearch[0].sid)
+# FetchCardValue(cardToPriceSearch[0].sid)
 
-if len(cardsInStock) < len(cards):
-    print()
-    print("Cards not at AFK: ")
-    missingCards = list(set(cards) - set(cardsInStock))
-    for i in range(len(missingCards)):
-            print(missingCards[i])
-print()
-print("AFK has " + str(len(cardsInStock)) + " of the " + str(len(cards)) + " needed.")
+# for i in range(0, len(cardToPriceSearch)):
+#     print(cardToPriceSearch[i].sid)
+#     FetchCardValue(cardToPriceSearch[i].sid)
 
 
