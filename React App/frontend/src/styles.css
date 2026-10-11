@@ -5,19 +5,19 @@
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
 
   /* Color Palette */
-  --bg-main: #f1f5f9;
-  --bg-card: #ffffff;
-  --bg-item: #f8fafc;
+  --bg-main: #171717;
+  --bg-card: #141414;
+  --bg-item: #141414;
 
-  --text-main: #0f172a;
-  --text-muted: #64748b;
-  --text-body: #1e293b;
-  --text-dark: #334155;
+  --text-main: #BA2E2E;
+  --text-muted: #c2c2c2;
+  --text-body: #B71C1C;
+  --text-dark: #8c8c8c;
 
-  --border-light: #e2e8f0;
-  --color-primary: #3b82f6;
-  --color-success: #22c55e;
-  --color-error: #ef4444;
+  --border-light: #212121;
+  --color-primary: #D81B60;
+  --color-success: #B71C1C;
+  --color-error: #990269;
 
   /* Layout Constants */
   --radius-lg: 12px;
@@ -104,6 +104,10 @@ body {
   font-weight: 600;
 }
 
+.search-input-wrapper {
+  position: relative;
+}
+
 .search-textarea {
   display: block;
   box-sizing: border-box;
@@ -146,6 +150,48 @@ body {
   opacity: 0.7;
 }
 
+.bouncing-loader {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  background: rgb(26 26 26 / 92%);
+}
+
+.bouncing-thommy {
+  position: absolute;
+  bottom: 18px;
+  z-index: 1;
+  width: 64px;
+  height: 130px;
+  object-fit: contain;
+  transform-origin: bottom center;
+}
+
+.bouncing-shadow {
+  position: absolute;
+  bottom: 16px;
+  width: 58px;
+  height: 9px;
+  border-radius: 50%;
+  background: #000;
+}
+
+.bouncing-loader-label {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: 0.35rem;
+  color: #fff;
+  font-size: 0.8rem;
+  text-align: center;
+}
+
 .search-message {
   margin-top: 1rem;
   color: var(--color-success);
@@ -154,4 +200,64 @@ body {
 
 .search-message.error {
   color: var(--color-error);
+}
+
+.found-cards {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+}
+
+.carousel-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  gap: 1.25rem;
+  margin-top: 1.5rem;
+  align-items: start;
+}
+
+.card-carousel {
+  min-width: 0;
+  padding: 1rem;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  background: var(--bg-card);
+  box-shadow: var(--shadow);
+}
+
+.card-carousel h2 {
+  margin: 0 0 0.75rem;
+  color: var(--text-main);
+  font-size: 1.15rem;
+}
+
+.card-carousel > img {
+  display: block;
+  width: min(200%, 440px);
+  aspect-ratio: 5 / 7;
+  object-fit: contain;
+  margin: 0 auto;
+}
+
+.carousel-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin: 0.75rem 0;
+}
+
+.carousel-controls button {
+  min-width: 2.25rem;
+  min-height: 2.25rem;
+  border: 0;
+  border-radius: 50%;
+  color: #fff;
+  background: var(--color-primary);
+  font-size: 1.25rem;
+  cursor: pointer;
+}
+
+.card-carousel p {
+  margin: 0.35rem 0;
 }
