@@ -2,7 +2,9 @@ import { useEffect, useState } from 'react';
 import { pink } from '@mui/material/colors';
 import axios from 'axios';
 import ThommyIcon from './assets/ThommyIcon.png';
+import ThommyNoticingIcon from './assets/ThommyIconNoticing.png';
 import BagelBoy from './assets/Jumping For Joy.gif';
+import RunningSkeleton from './assets/Running.gif';
 import { motion } from "motion/react";
 import Checkbox from '@mui/material/Checkbox';
 import FormGroup from '@mui/material/FormGroup';
@@ -117,17 +119,25 @@ export default function HomePage() {
   };
 
   const isBagelBoySearch = text.toLowerCase().includes('bagel boy');
+  const isSkeletonSearch = text.toLowerCase().includes('#noticing');
   const resultPrintings = foundCards.flatMap((cardEntry) =>
     Object.values(cardEntry).flat()
   );
   const resultPrices = resultPrintings.map((printing) => Number(printing.price));
-  const hasUnavailablePrice = resultPrintings.some(
-    (printing, index) =>
+  const availablePrices = resultPrintings.reduce((prices, printing, index) => {
+    if (
       printing.price == null ||
       printing.price === '' ||
       !Number.isFinite(resultPrices[index])
-  );
-  const totalPrice = resultPrices.reduce((total, price) => total + price, 0);
+    ) {
+      return prices;
+    }
+
+    prices.push(resultPrices[index]);
+    return prices;
+  }, []);
+  const hasUnavailablePrice = availablePrices.length < resultPrintings.length;
+  const totalPrice = availablePrices.reduce((total, price) => total + price, 0);
   const formattedTotalPrice = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
@@ -144,7 +154,9 @@ export default function HomePage() {
               <p>Found {foundCards.length} card{foundCards.length !== 1 ? 's' : ''}.</p>
               {resultsShowCheapestOnly && (
                 <p>
-                  Total price: {hasUnavailablePrice ? 'Unavailable' : formattedTotalPrice}
+                  Total price: {formattedTotalPrice}
+                  {hasUnavailablePrice &&
+                    ' (Some prices could not be calculated, expect actual total to be greater)'}
                 </p>
               )}
             </div>
@@ -168,10 +180,28 @@ export default function HomePage() {
         <div>
           <main className="hero">
             <h1 className="title">
-              <img src={ThommyIcon} alt="Thommy's Terrific AFK TCG Searcher" className="logo-image" />
+              <img src={isSkeletonSearch ? ThommyNoticingIcon : ThommyIcon} alt="Thommy's Terrific AFK TCG Searcher" className="logo-image" />
             </h1>
             <p className="subtitle">Paste your MTG list below</p>
-
+                {(isSkeletonSearch && isSearching) && (
+                            <div className="skeleton-runner">
+                              <motion.img
+                                src={RunningSkeleton}
+                                alt=""
+                                style={{ width: '500px', height: 'auto', zIndex: '200', position: 'absolute', left: 0 }}
+                                initial={{ x: "-100%" }}
+                            animate={{
+                              x: "100vw",
+                            }}
+                            transition={{
+                              duration: 1,
+                              ease: "linear",
+                              repeat: Infinity,
+                              repeatType: "loop"
+                            }}
+                            />
+                          </div>
+                )}
                 <form className="search-card" onSubmit={handleSearch}>
                   <label className="search-label" htmlFor="search-text">
                     Text to search
@@ -192,7 +222,7 @@ export default function HomePage() {
                         aria-label={isBagelBoySearch ? 'Bagel Boy is searching' : 'Thommy is searching'}
                       >
                         <motion.img
-                          src={isBagelBoySearch ? BagelBoy : ThommyIcon}
+                          src={isSkeletonSearch ? ThommyNoticingIcon : isBagelBoySearch ? BagelBoy : ThommyIcon}
                           alt=""
                           className="bouncing-thommy"
                           animate={{
