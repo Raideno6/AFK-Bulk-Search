@@ -10,7 +10,7 @@ import Checkbox from '@mui/material/Checkbox';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 
-function CardCarousel({ cardName, printings }) {
+function CardCarousel({ cardName, printings, showRequestedQuantity }) {
   const [index, setIndex] = useState(0);
 
   if (!printings?.length) return null;
@@ -41,7 +41,9 @@ function CardCarousel({ cardName, printings }) {
 
       <p>{printing.s}</p>
       <p>{String(printing.f) === '1' ? 'Foil' : 'Nonfoil'}</p>
-      <p>Quantity: {printing.q}</p>
+      <p>
+        Quantity: {showRequestedQuantity ? printing.requested_quantity : printing.q}
+      </p>
       <p>
         Price: {printing.price == null ? 'Unavailable' : `$${printing.price}`}
       </p>
@@ -123,25 +125,58 @@ export default function HomePage() {
   const resultPrintings = foundCards.flatMap((cardEntry) =>
     Object.values(cardEntry).flat()
   );
-  const resultPrices = resultPrintings.map((printing) => Number(printing.price));
-  const availablePrices = resultPrintings.reduce((prices, printing, index) => {
+  const availablePrices = resultPrintings.reduce((prices, printing) => {
+    const price = Number(printing.price);
     if (
       printing.price == null ||
       printing.price === '' ||
-      !Number.isFinite(resultPrices[index])
+      !Number.isFinite(price)
     ) {
       return prices;
     }
 
-    prices.push(resultPrices[index]);
+    prices.push(price * Number(printing.requested_quantity ?? 1));
     return prices;
   }, []);
   const hasUnavailablePrice = availablePrices.length < resultPrintings.length;
   const totalPrice = availablePrices.reduce((total, price) => total + price, 0);
-  const formattedTotalPrice = new Intl.NumberFormat('en-US', {
+  const currencyFormatter = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
-  }).format(totalPrice);
+  });
+  const formattedTotalPrice = currencyFormatter.format(totalPrice);
+
+  const exportCheapestList = () => {
+    const rows = foundCards.flatMap((cardEntry) =>
+      Object.entries(cardEntry).flatMap(([cardName, printings]) =>
+        printings.map((printing) => {
+          const quantity = Number(printing.requested_quantity ?? 1);
+          const price = Number(printing.price);
+          const formattedPrice = Number.isFinite(price)
+            ? currencyFormatter.format(price)
+            : 'Unavailable';
+
+          return `${cardName} - ${quantity} - ${formattedPrice}`;
+        })
+      )
+    );
+    const unavailableNote = hasUnavailablePrice
+      ? '\n(Some prices are unavailable; the projected total excludes them.)'
+      : '';
+    const fileContent = [
+      'CARD NAME - QUANTITY - PRICE',
+      ...rows,
+      '',
+      `TOTAL PROJECTED PRICE: ${formattedTotalPrice}${unavailableNote}`,
+    ].join('\n');
+    const file = new Blob([fileContent], { type: 'text/plain;charset=utf-8' });
+    const downloadUrl = URL.createObjectURL(file);
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.download = 'cheapest-printings.txt';
+    link.click();
+    URL.revokeObjectURL(downloadUrl);
+  };
 
   return (
     <div>
@@ -163,6 +198,11 @@ export default function HomePage() {
             <button type="button" onClick={() => setFoundCards([])}>
               New search
             </button>
+            {resultsShowCheapestOnly && (
+              <button type="button" onClick={exportCheapestList}>
+                Export as text
+              </button>
+            )}
 
             <div className="card-carousel-container">
                 {foundCards.flatMap((cardEntry) =>
@@ -171,6 +211,7 @@ export default function HomePage() {
                       key={cardName}
                       cardName={cardName}
                       printings={printings}
+                      showRequestedQuantity={resultsShowCheapestOnly}
                     />
                   ))
                 )}

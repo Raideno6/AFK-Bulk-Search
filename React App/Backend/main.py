@@ -29,6 +29,7 @@ class Card:
     f: str    # Foil status
     price: str | None = None # Price
     image_url: str = "" # Image URL
+    requested_quantity: int = 1
 
     @classmethod
     def from_dict(cls, data: dict) -> 'Card':
@@ -91,19 +92,22 @@ async def search(request: SearchRequest):
     cards = parse_card_list([request.text])
     semaphore = asyncio.Semaphore(MAX_CONCURRENT_CARD_SEARCHES)
 
-    async def fetch_card(card_name):
+    async def fetch_card(card_name, quantity):
         async with semaphore:
             return await asyncio.to_thread(
                 FetchAllPrintings,
                 card_name,
                 printImages=request.printImages,
                 showCheapestOnly=request.ShowOnlyCheapest,
+                requestedQuantity=quantity,
             )
 
-    card_printings = await asyncio.gather(*(fetch_card(card) for card in cards))
+    card_printings = await asyncio.gather(
+        *(fetch_card(card_name, quantity) for card_name, quantity in cards)
+    )
     cardsInStock = [
         {card_name: printings}
-        for card_name, printings in zip(cards, card_printings)
+        for (card_name, _), printings in zip(cards, card_printings)
         if printings
     ]
 
@@ -187,7 +191,7 @@ def findInStock(cid):
         return False
 
 def parse_card_list(raw_input_list):
-    card_list = []
+    quantities_by_name = {}
 
     if len(raw_input_list) == 1 and "\n" in raw_input_list[0]:
         lines_to_process = raw_input_list[0].split('\n')
@@ -206,14 +210,18 @@ def parse_card_list(raw_input_list):
 
         if parts[0].isdigit() and len(parts) > 1:
             card_name = parts[1]
-            card_list.append(card_name)
+            quantity = int(parts[0])
         else:
-            card_list.append(cleaned_line)
+            card_name = cleaned_line
+            quantity = 1
 
-    card_list = list(dict.fromkeys(card_list))
-    return card_list
+        quantities_by_name[card_name] = quantities_by_name.get(card_name, 0) + quantity
 
-def FetchAllPrintings(cardName, printImages=True, showCheapestOnly=False):
+    return list(quantities_by_name.items())
+
+def FetchAllPrintings(
+    cardName, printImages=True, showCheapestOnly=False, requestedQuantity=1
+):
     url = "https://mtg.afk.games/AFKMTG.asmx/cardNameSearch"
 
     headers = {
@@ -284,6 +292,8 @@ def FetchAllPrintings(cardName, printImages=True, showCheapestOnly=False):
                     )
                 ):
                     cheapestPrinting = printing
+        if cheapestPrinting is not None:
+            cheapestPrinting.requested_quantity = requestedQuantity
         if printImages and cheapestPrinting is not None:
             time.sleep(0.5)
             cheapestPrinting.image_url = GetScryfallImage(cheapestPrinting.sid)
@@ -291,6 +301,7 @@ def FetchAllPrintings(cardName, printImages=True, showCheapestOnly=False):
         for i in range(len(cardList)):
             if int(cardList[i]["q"]) > 0:
                 printing = Card(**cardList[i])
+                printing.requested_quantity = requestedQuantity
                 if (printing.f == "1" and cardPrices.get(printing.sid) is not None):
                     printing.price = cardPrices[printing.sid]["usd_foil"]
                 elif (printing.f == "0" and cardPrices.get(printing.sid) is not None):
